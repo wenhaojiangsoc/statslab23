@@ -60,12 +60,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * Working in groups is strongly encouraged.
 
+* Email me any time if you have questions about coding or environmental setup. 
+
 * The final replication project is based on this ASR paper: \
 Going Back in Time? Gender Differences in Trends and Sources of the Racial Pay Gap, 1970 to 2010, by Hadas Mandel and Moshe Semyonov
   
 ## Prerequisite
 * Download & install R: https://cloud.r-project.org/
 * Download & install RStudio: https://rstudio.com/products/rstudio/download/
+* For Mac users, download and install [MacTex](https://tug.org/mactex/). For Windows users, download and install [MiKTeX](https://miktex.org/download). We will need a TeX installation to knit R Markdown codes into PDFs to complete assignments.
 * Sign up for Overleaf (for LaTeX): https://www.overleaf.com/ (Using your nyu email address will give you free access to professional account). 
   * We will use LaTeX for the final replication project. 
   * Overleaf is very easy to share and collaborate on projects (v.s. Microsoft Word).
@@ -101,7 +104,7 @@ Going Back in Time? Gender Differences in Trends and Sources of the Racial Pay G
   
   + R Markdown also allows you to type **mathematical equations** efficiently. Equation formats are identical to LaTeX.
   
-  + If you are **coding for assignments, R Markdown is preferred**. If you are coding for simpler tasks, you can use R script.
+  + If you are **coding for assignments, R Markdown is required**. If you are coding for simpler tasks, you can use R script.
 
 ### R Markdown: Layout, the Markdown languages, and Knitting
 
@@ -746,7 +749,7 @@ gapminder %>%
 ## Part 6 Preparations for Assignment 1
 
 + In lecture, we talked about the difference between population and sample, and population parameter and sample statistic. 
-+ We can simulate some of the concepts using R.
++ We can simulate some of the concepts using R, as R can "randomly" sample from a hypothetical "population".
 
 ```{r sample from population, eval = F}
 ## set randomization "seed" 
@@ -787,6 +790,5 @@ pop_sd <- sd(pop)*(length(pop)-1)/length(pop)
 ## which one is closer
 mean(sd_vector_n) - pop_sd
 mean(sd_vector_n_1) - pop_sd
-
 ```
 
