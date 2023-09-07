@@ -11,3 +11,4 @@ Lab materials for SOC-GA 2332 Intro to Stats (Fall 2023, NYU Sociology)
 ### Lab 1 Basic of R and Rstudio, R Markdown, LaTeX (9/8/2023)
 + Lab 1 covers the introduction R and to Rstudio, LaTeX, data structures in R, basic data cleaning, and a guidance to assignment 1.
 + Preview lab notes: [Lab 1](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab1/lab1.html)
++ Download the lab folder from the link: https://download-directory.github.io/. I will explain in lab.
