@@ -59,6 +59,9 @@ knitr::opts_chunk$set(echo = TRUE)
   * prepare for the final replication project
 
 * Working in groups is strongly encouraged.
+
+* The final replication project is based on this ASR paper: \
+Going Back in Time? Gender Differences in Trends and Sources of the Racial Pay Gap, 1970 to 2010, by Hadas Mandel and Moshe Semyonov
   
 ## Prerequisite
 * Download & install R: https://cloud.r-project.org/
@@ -82,7 +85,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ![Layout of Rstudio (Wickham & Grolemund 2017)](graph/rstudio-editor.png){width=50%}
 </p> 
 
-### Coding in R Script vs. R Markdown
+### Coding in R Script v.s. R Markdown
 
   + **R Script** is a simple code script document. The output of R script cannot be saved within the script.
   
@@ -92,14 +95,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ![R Script (Left) and R Markdown (Right)](graph/rscript_vs_rmd.png){width=70%}
 </p>
   
-  + Different from R Script, **R Markdown** allows users to **present both their code and the code’s output (tables, plots, etc.) in a single document**, usually by "knitting"" (rendering) an R Markdown to a HTML or PDF file.  
+  + Different from R Script, **R Markdown** allows users to **present both their code and the code’s output (tables, plots, etc.) in a single document**, usually by "knitting" (rendering) an R Markdown to a HTML or PDF file.  
   
   + R Markdown allows you to divide your code into sections, which helps you **better organize** your code.
   
-  + R Markdown also allows you to type **mathematical equations** efficiently.
+  + R Markdown also allows you to type **mathematical equations** efficiently. Equation formats are identical to LaTeX.
   
   + If you are **coding for assignments, R Markdown is preferred**. If you are coding for simpler tasks, you can use R script.
-  
 
 ### R Markdown: Layout, the Markdown languages, and Knitting
 
@@ -119,11 +121,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 + To type mathematical symbols and expressions, you need to follow a particular Markdown syntax. For example, to print the Greek letter $\alpha$, you need to type `$\alpha$` in the text editor chunk of your R Markdown file. But you don't need to memorize all of the expressions. Google or refer to [this guide](https://rpruim.github.io/s341/S19/from-class/MathinRmd.html) when you work on mathematical equations.
 
-+ To insert equations, you need to wrap your expression with the dollar sign. To type "inline equations" (equations that won't break your lines), use the dollar sign `$` to wrap your expression: `$\hat{\mu} = \overline{y} = \frac{\sum_{i = 1}^{n}y_i}{n}$` gives: $\hat{\mu} = \overline{y} = \frac{\sum_{i = 1}^{n}y_i}{n}$.  
++ To insert equations, you need to wrap your expression with the dollar sign. To type "inline equations" (equations that won't break your lines), use the dollar sign `$` to wrap your expression: `$\hat{\mu} = \frac{\sum_{i = 1}^{n}y_i}{n}$` gives: $\hat{\mu} = \bar{y} = \frac{\sum_{i = 1}^{n}y_i}{n}$.  
 
-For "displayed equations" (equations that will break your lines), use the double dollar sign `$$` to wrap your expression: `$$\overline{y} = \displaystyle \frac{y_1 + y_2 + y_3 + ... + y_n}{n} = \displaystyle \frac{\sum_{i = 1}^{n} y_i}{n}$$` gives: $$\overline{y} = \displaystyle \frac{y_1 + y_2 + y_3 + ... + y_n}{n} = \displaystyle \frac{\sum_{i = 1}^{n} y_i}{n}$$ 
-
-+ **Do not leave spaces between the `$$` (or `$`) and your mathematical notation!**
+For "displayed equations" (equations that will break your lines), use the double dollar sign `$$` to wrap your expression: `$$\hat{\mu} = \bar{y} = \frac{y_1 + y_2 + y_3 + ... + y_n}{n} = \frac{\sum_{i = 1}^{n} y_i}{n}$$` gives: $$\hat{\mu} = \bar{y} = \frac{y_1 + y_2 + y_3 + ... + y_n}{n} = \frac{\sum_{i = 1}^{n} y_i}{n}$$
 
 + In R Markdown, hovering over your equation expressions will give you a preview of the equation you write.
 
@@ -135,16 +135,15 @@ For "displayed equations" (equations that will break your lines), use the double
 
 + There are many options in R Markdown that helps you manipulate how you want to present your document. For example, you can hide the code chunk and only show the output by adding `echo = FALSE` in your code chunk options. You can also use `include = FALSE` to prevent the code AND its output to appear in your knitted document. You can also use `eval = FALSE` to prevent your code from running (but it will be displayed) in your knitted document. For detailed documentation of knitting options, read [here](https://yihui.org/knitr/options/).
 
-
 ---
 
 ## Part 2: Coding in R 
 
-In this part, we will go through the basics of the R language, including installing packages, types of variable objects, types of data objects, and how to code a function in R. We will also come across plotting in R, but don't worry if you cannot understand the more complicated codes yet -we will cover them later. 
+In this part, we will go through the basics of the R language, including installing packages, types of variable objects, types of data objects, and how to code a function in R. We will also come across plotting in R, but don't worry if you cannot understand the more complicated codes yet - we will cover them later. 
 
 ### 1. Installing and using packages (setting up your environment)  
 
-+ Assume you are starting a new coding task, you should first open RStudio, create a coding file (either R script or R Markdown), and save the file to a path in your computer. (If you are starting a bigger project, such as an assignment or the final replication project, you should follow the bast-practice workflow [here](#best_practice) )
++ Assume you are starting a new coding task, you should first open RStudio, create a coding file (either R script or R Markdown), and save the file to a path in your computer.
 
 + After creating a `.Rmd` or `.R` file, you need to install and load necessary packages (using `install.packages()` and `library()`) so that you can use functions from other statistical packages. 
 
@@ -153,16 +152,14 @@ In this part, we will go through the basics of the R language, including install
 + For example, to use the packages `tidyverse`, `gridExtra`, and `kableExtra`, you need to type the following code in your coding chunk: `install.packages(c("tidyverse", "gridExtra", "kableExtra"))`, then use the `library()` function to load each of them in your environment.
 
 ```{r install and load packages}
-
 # Install packages
-# (after you install, you can delete the line below and keep only the 'library' line)
+# After you install, you can delete the line below and keep only the 'library' line
 # install.packages(c("tidyverse", "gridExtra", "kableExtra"))
 
 # Load package to environment
 library(tidyverse)
 library(gridExtra)
 library(kableExtra)
-
 ```
 
 ### 2. Types of variables in R 
@@ -171,22 +168,21 @@ We use R to perform data cleaning and statistical analysis. But before that, we 
 
 + Most common data types in R: 
   (i) **Logical** variable: `TRUE` (`T`) or `FALSE` (`F`)  
-  (ii) **Character** variable (think of the "nominal categorical variables" we covered in lecture): a string, e.g. "hello world!", "college education", "female"  
+  (ii) **Character** variable (think of the "nominal categorical variables" we covered in lecture): a string, e.g. "female", "married"  
   (iii) **Numeric** variable: 
     + **Integer** (think of the "discrete variables" we covered in lecture): e.g. 1L, 2L, ...
     + **Double** (think of the "continuous variables" we covered in lecture): e.g. 1.44, 3.14
     + R automatically converts between these two classes when needed for mathematical purposes.
 
-+ Variable types matter when you use different functions in R. For example, you cannot perform arithmetic with character variables even if they appear to be numbers. 
++ Variable types matter when you use different functions in R. For example, you cannot perform arithmetic (e.g. mean or median) with character variables even if they appear to be numbers. 
 
 + Check variable type using `class()` or `str()`
 
-+ To create a variable, you give it a name first, then use either `<-` or `=` followed by the value you want to assign. E.g. `variable1 = "hello world!"`
++ To create a variable, you give it a name first, then use either `<-` or `=` followed by the value you want to assign. E.g. `variable1 = "female"`
 
 + It's preferable to **leave spaces around your `<-` or `=`** so that your code is easy to read. 
 
 ```{r variable types, eval = FALSE}
-
 # Run the following codes in your environment:
 
 # logical
@@ -225,7 +221,6 @@ is.character(n1)
 
 is.integer(c1)
 is.integer(n1)
-
 ```
 
 ### 3. Types of data in R
@@ -234,21 +229,18 @@ Here, data are defined as a collection of variables.
 
 + Most common data types in R:  
 
-  (i) **Vectors**: A collection of elements of the same data type, e.g. logical vector, character vector, numeric vector.
+  (i) ***Vectors***: A collection of elements of the same data type, e.g. logical vector, character vector, numeric vector. **In most cases, each column of a dataset (variable) is a vector**.
 
   (ii) **Matrices**: A vector with two dimensions. Elements in a matrix must share the same variable type (numeric, character, etc.).
   
   (iii) **Arrays**: Arrays are similar to matrices but can have more than two dimensions.
   
-  (iv) **Data frames**: Similar to matrices but different columns can have different variables types (numeric, character, logical, etc.). There can also be columns that have *data structure* rather than *variables*, e.g. a column of lists, a column of data frames, a column of matrices, etc.  
+  (iv) ***Data frames***: Similar to matrices but different columns can have different variables types (numeric, character, logical, etc.). **In most cases, this is the format of a dataset, or a collection of vectors**.  
   
   (v) **Lists**: An ordered collection of objects with no constraint on their variable or data types, e.g. a list of character, a list of numeric, a list of vector, a list of list, a list of a mix of logical variables, character variables, and dataframes.
   
   (vi) **Factors**: A vector that is *ordered* (think of the "ordinal categorical variables" we covered in lecture). It can organize a categorical variable in a particular order for your desired ranking/ordering needs. For example, you can change a vector of educational levels `c("high school graduate", "4-year college", "some college", "below high school", "graduate or above")` to have an internal ranking `"below high school" < "high school graduate" < "some college" < "4-year college" < "graduate or above"` so that when you plot, these categories are ordered. 
   
-  
-+ Similar to variable types, data types matter when you use different functions in R. It also matters in terms of indexing and managing data.
-
 + Similar to variable, to create a data object, you give it a name first, then use either `<-` or `=` followed by the data object you want to assign, e.g. `vector1 = c(1, 2, 5.3, 6, -2, 4)`.
 
 + It's preferable to **leave space after each comma `", "`** in your code to make it easy to read.
@@ -262,10 +254,10 @@ v1 = c(1, 2, 5.3, 6, -2, 4) # numeric vector
 v2 = c("one", "two", "three") # character vector
 v3 = c(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE) #logical vector
 
-v4 = vector(mode = "numeric", length = 10) # a vector of zeros
-v4[5] = 8 # you can assign value by indexing the vector
+v1[2] = 8 # you can assign value by indexing the vector
 
-v5 = seq(0.1, 1, 0.1) # seq() creates a regular sequence 
+v4 = seq(0.1, 1, 0.1) # seq() creates a sequence (from, to, interval)
+v5 <- rep(0.1, 10) # rep() repeats an element for n times (element, n)
 
 # check if vector 
 is.vector(v1)
@@ -276,23 +268,9 @@ length(v1)
 # vector operation
 v6 = v4 + v5
 
-
-# --------- Matrices --------- 
-m1 = matrix(rep(1, 9), nrow = 3, ncol = 3)
-m2 = matrix(seq(0.1, 1.5, 0.1), nrow = 3, ncol = 5)
-# combine matrices
-cbind(m1, m2)
-# scalar
-0.5 * m1
-# transpose
-t(m2)
-# diagonal elements
-diag(m2)
-# matrix multiplication
-m1 %*% m2
-# element-wise multiplication
-m1 * m2[1:3, 1:3]
-
+# you can do basic calculations/have descriptions on vector (this is related to your assignment 1!)
+sum(v1)
+length(v1)
 
 
 # --------- Data frames --------- 
@@ -303,62 +281,14 @@ mydf <- data.frame(var1, var2, var3)
 names(mydf) <- c("ID", "Color", "Passed") # update variable names
 
 # Base R methods of data frame indexing 
-mydf[1:2] # columns 1, 2 of data frame
+mydf[ , 1:2] # columns 1, 2 of data frame
 mydf[c(1, 3), ] # row 1, 3 of data frame
-mydf[c("ID", "Color")] # columns ID and Color from data frame
+mydf[, c("ID", "Color")] # columns ID and Color from data frame
 mydf$Color # variable Color in the data frame
 
 # Convert a vector or matrix to df
 as.data.frame(v1)
-as.data.frame(m1)
-
-
-# --------- Lists --------- 
-l1 = list(n1, c1, v1, m1)
-l1
-# List index
-l1[4]
-l1[[4]]
-l1[4][[1]]
-# Nested list
-l2 = list(m2, l1)
-l2
-
 ```
-
-
-```{r data types-factor,  eval = TRUE}
-
-# --------- Factor --------- 
-
-# A vector of education levels, unordered
-edu <- c(rep("high school graduate", 15), 
-         rep("4-year college", 4),
-         rep("graduate or above", 2),
-         rep("some college", 6),
-         rep("below high school", 6))
-
-# Plot its count: Default order is alphabetical
-edu %>%
-  as.data.frame() %>%
-  ggplot(aes(x = edu)) + 
-  geom_bar()
-
-# Covert vector to a factor with cutomized levels
-edu_factor <- factor(edu, 
-                     levels = c("below high school", 
-                                "high school graduate" , 
-                                "some college", 
-                                "4-year college",
-                                "graduate or above"))
-# Plot the counts again:
-edu_factor %>%
-  as.data.frame() %>%
-  ggplot(aes(x = edu_factor)) + 
-  geom_bar()
-
-```
-
 
 ### 4. What's a function
 
@@ -396,43 +326,6 @@ add_one <- function(vector){
 
 # try:
 add_one(v1)
-
-```
-
-### Part 2 Exercise
-
-1. The table below shows the results of a survey question using a five-point Likert scale. Create a **factor** variable corresponding to the distribution of the survey result, and replicate the plot shown below.
-
-
-|  Answer   | n   |
-|:---------|-----:|
-|Strongly agree|  10|
-|Agree      |  23|
-|Neutral    |  30|
-|Disagree   |  18|
-|Strongly disagree|  12|
-
-
-<p align="left">
-![](graph/part2_exercise.png){width=50%}
-</p> 
-
-```{r part2 q1}
-
-# Write your code here
-
-```
-
-2. In R, you can check the remainder of a division using the `%%` operator. For example, the remainder of $4 \div 2$ can be calculated by `4 %% 2` in R.  
-
-  (i) Write a function (call it `even_remainder`) such that with an input numeric vector, it will return a numeric vector indicating the remainder value when each number in the vector is divided by 2. For example, with the input `v_in = c(1, 2, 3, 4)`, the function will return `1 0 1 0`.  
-  
-  (ii) (Bonus Question) Write a function (call it `if_even`) such that with an input numeric vector, it will return a *logical* vector indicating whether the respective value is an even number. For example, with the input `v_in = c(1, 2, 3, 4)`, the function will return `FALSE TRUE FALSE TRUE`.
-
-```{r part2 q2}
-
-# Write your code here
-
 ```
 
 ---
@@ -445,28 +338,11 @@ add_one(v1)
 
   (i) Reading documentation of the function/package you use: Type the package or function name you use in the **Help** tab in the lower right panel.
   
-  (ii) Googling your error massage.
+  (ii) Googling your error massage. Nowadays you can also ask ChatGPT.
   
   (iii) Posting your question on [stack overflow](https://stackoverflow.com/). Make sure to provide a reproducible example for the bug you run into. Here's [a guide on how to make a minimal reproducible example](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example).
 
 + For more information, you can read [this chapter](https://adv-r.hadley.nz/debugging.html) on debugging in R.
-
-
-<a id="best_practice"></a>  
-
-#### Workflow for more complicated coding projects: The best practice step-by-step guide  
-
-  - Every time when you start a new project or assignment, starting by creating a new, devoted folder for that project. (A even better way to save and track your work is to use GitHub repositories -Google it if you are interested. We might also cover it in lab if we have time.)
-  - Second, open **Rstudio**, click **File**, then select **New Project...**, and then choose the project folder you created in step 1, name the project and save it.
-  - Third, open that **.Rproj** file you just created, and start coding.
-  - After you are done coding and want to exit Rstudio, remember to **save** your current coding progress so that when you open the **.Rproj** file again, you start exactly from where you stopped. 
-  
-<p align="center">
-![Save your session data before you exit Rstudio](graph/rstudio-save.png){width=50%}
-</p>
-  
-  - To better manage your files, I recommend that you create **subfolders** within the project folder to organize your files, for example, a folder called **data** to save data files, a folder called **graphs** to save plots, images, etc.
-
 
 #### Other advice
 
@@ -474,9 +350,7 @@ add_one(v1)
 
   (i) Keep an eye on objects in your environment. It's always easier to keep track of your work if you clear your environment every time you start a new task. In addition, by removing large data objects in your environment, R will run more smoothly.
   
-  (ii) But make sure you **save the important objects before you clear your environment**. I always create a `temp_data` folder for temporary data, and use `save(object_name, file = "temp_data/object_name.RData")` to quickly save things I might need to use in the future by using `load("temp_data/object_name.RData")`.
-  
-  (iii) To clean the working environment, I often change the environment display from `List` to `Grid`, and select the objects I want to remove, then use the little broom logo in the Environment tab. You can also use `rm(list=ls())` to clear everything in your work space, but use this with caution!
+  (ii) To clean the working environment, I often change the environment display from `List` to `Grid`, and select the objects I want to remove, then use the little broom logo in the Environment tab. You can also use `rm(list=ls())` to clear everything in your work space, but use this with caution!
   
   
 + In-line comments and other coding style suggestions:
@@ -485,11 +359,7 @@ add_one(v1)
   
   (ii) In general, it's better to be generous in spacing. Add spaces between numbers, =, commas, etc. You can start a new line after each comma (`,`) in your code, it's often possible to **break a very long line of code to multiple lines**.
   
-  (iii) R language is **case-sensitive**. Make sure you are using the correct function name, for example, `as.Date()` instead of `as.date()`.
-  
-
-+ Recommended reading: [R for Data Science](https://r4ds.had.co.nz/index.html)
-
+  (iii) R language is **case-sensitive**. Make sure you are using the correct function name, for example, `as.Dataframe()` instead of `as.date()`.
 
 ---
 
@@ -502,26 +372,26 @@ add_one(v1)
 
 + It provides typesetting syntax that allows user to quickly tackle complicated typesetting tasks, such as inputting equations, cross-referencing, creating tables and bibliographies.  
 
-+ You don't have to learn coding LaTeX from scratch. There are a wide variety of templates ready to use on Overleaf.
++ You don't have to learn coding and formating LaTeX from scratch. There are a wide variety of templates ready to use on Overleaf. For example, Overleaf provides the template for [PNAS](https://www.overleaf.com/gallery/tagged/pnas).
         
 ### What is Overleaf
 
 + Overleaf is a collaborative cloud-based **LaTeX editor**.  
 
-+ You can check out a demo document on Overleaf [here](https://www.overleaf.com/project/601c205a62003571959e317a).
++ You can check out a demo document on Overleaf [here](https://www.overleaf.com/read/rxpsgfgjczbk).
 
 + Overleaf offers comprehensive guidance on how to create and edit LaTeX documents.  
 
-+ My suggestion for you to use \LaTeX{} for the final project is to start from **a default template in Overleaf** ( [check out their templates here](https://www.overleaf.com/latex/templates) ). Then you can search and learn the specifics when you come across questions or problems --such as how to insert tables, how to fit tables to page, insert equations, how to change the font size, how to organize citations, etc.  
++ For the final project, you will writing paragraphs, creating tables and figures, etc. using LaTeX. I will provide you with a basic template with instructions. You can also search and learn the specifics when you come across questions or problems -- such as how to insert tables, how to fit tables to page, insert equations, how to change the font size, how to organize citations, etc.  
 
-+ However, if you want to learn the basics and try creating a \LaTeX{} document from scratch, you can [use the 30-minute quick guide](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes) on Overleaf.
++ I strongly recommend taking a look at [the 30-minute quick guide](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes) on Overleaf.
 
 
 ## Part 4 Tidy Data and Tidyverse
 
 ### Working with Data: The Standard Workflow (Wickham & Grolemund 2017)
 
-A typical data science project starts with data cleaning ("tidying"). In practice, we spend a LOT of time just to clean the data so that it is ready for descriptive analysis and modeling exercise. For example, dealing with missing values, incoherent variable codings across survey years, outliers, inflations, etc. You can read more about using R for data science [here](https://r4ds.had.co.nz/explore-intro.html).
+A typical data science project starts with data cleaning ("tidying"). In practice, we spend a LOT of time just to clean the data so that it is ready for descriptive analysis and modeling exercise. For example, dealing with missing values, incoherent variable codings across survey years, outliers, inflations, etc.
 
 <p align="center">
 ![](graph/data-science-workflow.png){width=70%}
@@ -568,7 +438,7 @@ A typical data science project starts with data cleaning ("tidying"). In practic
 </p>
 
 
-+ To learn `tidyverse` and coding in R more systematically, I strongly recommend the free online book by Wickham & Grolemund (2017): [R for Data Science](https://r4ds.had.co.nz/index.html). (A lot of the examples used in this lab is drawn from the book.)
++ To learn `tidyverse` and coding in R more systematically, you may check the free online book by Wickham & Grolemund (2017): [R for Data Science](https://r4ds.had.co.nz/index.html). (A lot of the examples used in this lab is drawn from the book.)
 
 
 ## Part 5 Using Tidyverse for Data Wrangling
@@ -577,19 +447,19 @@ A typical data science project starts with data cleaning ("tidying"). In practic
 
 + Comma-separated files (.csv) are the most common data files.
 
-+ Here I use the built-in function `read.csv()` to load .csv data files. Since I use `Rproject`, I only need to type in the *relative* file path instead of the absolute file path. 
++ Here I use the built-in function `read.csv()` to load .csv data files. Be sure to have the correct **working directory** (i.e., path of the folder where files are stored) before reading data.
 
-+ If you are not using `.Rproj`, you can input the *absolute* file path of your data files. You can also install and load the `here` package to find your absolute file path (google the package to learn more).
++ You can find the path of the folder by right-clicking it and `get info` (on Mac).
 
 
 ```{r import csv}
+# set working directory
+setwd("/Users/wenhao/Library/CloudStorage/Dropbox/Teaching/Graduate Stats github/lab1/data")
 
 # Load csv files
-gapminder <- read.csv("data/gapminder.csv") 
-tidy_df1 <- read.csv("data/tidy_example_1.csv")
-tidy_df2 <- read.csv("data/tidy_example_2.csv")
-
-
+gapminder <- read.csv("gapminder.csv") 
+tidy_df1 <- read.csv("tidy_example_1.csv")
+tidy_df2 <- read.csv("tidy_example_2.csv")
 ```
 
 ### 2. Browse data in R
@@ -599,6 +469,7 @@ tidy_df2 <- read.csv("data/tidy_example_2.csv")
 + Common things to check about your data: 
   + Sample size, i.e. number of observations: `nrow(data_object)`
   + Number of varibles: `ncol(data_object)`, and names of variables: `names(data_object)`
+  + Alternatively, I am more used to `dim(data_object)`, which gives both the number of observations and the number of variables.
   + Summary statistics of each variable: `summary(data_object)`
   
 + You can also view the first and last several rows of your data: `head(data_object)`, `tail(data_object)`
@@ -617,12 +488,21 @@ names(gapminder)
 # number of rows and columnes
 nrow(gapminder)
 ncol(gapminder)
+dim(gapminder)
 
 # Check first several observations
 head(gapminder, n = 10)
 
 # Check last several observations
 tail(gapminder, n = 5)
+
+# Check mean, variance, sd, sum, length of a variable (column) (related to your HW)
+# Note that var and sd function in R uses n-1 as the denominator
+mean(gapminder$lifeExp)
+var(gapminder$lifeExp)
+sd(gapminder$lifeExp)
+sum(gapminder$lifeExp)
+length(gapminder$lifeExp)
 
 ```
 
@@ -705,7 +585,7 @@ select(gapminder, country:year)
 
 ```{r rename, eval = F}
 # ---------- Rename ---------- 
-rename(gapminder, population = pop)
+rename(gapminder, population = pop) # new name = old name
 
 ```
 
@@ -736,7 +616,7 @@ gapminder_2007 %>%
 
 ```
 
-+ You can also do the above use one single function, which can also be piped to your data object
++ You can also do the above using one single function, which can also be piped to your data object
 
 ```{r piping-2, eval = F}
 
@@ -759,7 +639,8 @@ gapminder %>%
 
 ### 5. Make untidy data tidy
 
-+ As we covered in the lecture, before analyzing data, make sure it's **tidy**.
++ In many cases, data are untidy.
++ One typical example is that the data is in a long format, with a single column containing multiple variable values.
 
 + What if it's not tidy?  
   (i) There are two `pivot` functions in `tidyverse` that help you make untidy data tidy. 
@@ -803,22 +684,14 @@ tidy_df2 %>%
               values_from = count)
 
 
-
-# You can save clean df as a new object, 
+# You can save clean df as a new object 
 tidy_clean <- tidy_df2 %>%
   pivot_wider(names_from = type, 
               values_from = count)
 
 
 # And export as .csv to your data folder
-write.csv(tidy_clean, "data/tidy_clean.csv", row.names = F)
-
-
-# You can manipulate your table layout in HTML 
-# using kable_styling() from the kableExtra package:
-tidy_clean %>%
-  kbl() %>%
-  kable_styling()
+write.csv(tidy_clean, "tidy_clean.csv", row.names = F)
 ```
 
 ### 6. Summarise and group data
@@ -828,6 +701,7 @@ tidy_clean %>%
 + The `group_by()` function creates a grouped copy of a table, thus you can apply various functions to each group.
 
 + Combining `group_by()` with `summarise()`, you can get various **descriptve statistics** for your data, either for the entire dataset, or by group (e.g. groups by gender, race, education level, etc.). 
+
 ```{r summarise and group, eval = F}
 
 # Example for summarise()
@@ -858,4 +732,61 @@ summary1 <- gapminder %>%
 summary1
 ```
 
++ Whenever there are NA values (meaning some values are not available in a column), it is necessary to add `, na.rm = T` in function. For example, 
+
+```{r summarise and group NA value, eval = F}
+gapminder %>%
+  filter(year == 2007) %>%
+  group_by(continent) %>%
+  summarise(avg_life = mean(lifeExp, na.rm=T))
+```
+
+---
+
+## Part 6 Preparations for Assignment 1
+
++ In lecture, we talked about the difference between population and sample, and population parameter and sample statistic. 
++ We can simulate some of the concepts using R.
+
+```{r sample from population, eval = F}
+## set randomization "seed" 
+## this is to ensure you can replicate results, even if population creation and sampling is "randomized"
+set.seed(2023)
+
+## create a hypothetical population where samples can be drawn
+pop <- runif(100000, min = 0, max = 1) ## a uniform distribution
+## other options include normal distribution: rnorm(n, mean, sd)
+
+## sample from the population
+sample <- sample(pop, size = 100, replace = FALSE) ## sample without replacement
+
+## calculate the sd of the sample (R uses n-1 as the denominator)
+sd(sample)
+```
+
++ We know from lecture that the sample SD has a different form from the population SD.
++ The reason why we have $n-1$ as the denominator is that it gives an **unbiased** estimation of the population SD.
++ We can simulate this conclusion using R.
+
+```{r simulate sd, eval = F}
+## create an empty vector to store sample SDs (200 simulations)
+sd_vector_n_1 <- rep(NA,200)
+sd_vector_n <- rep(NA,200)
+
+## "loop" or repeat the sampling process for 200 times
+set.seed(2023)
+for (i in seq(1,200,1)){
+  sample <- sample(pop, size = 100, replace = FALSE) ## sample without replacement
+  sd_vector_n_1[i] <- sd(sample)
+  sd_vector_n[i] <- sd(sample)*(100-1)/100
+}
+
+## the population sd
+pop_sd <- sd(pop)*(length(pop)-1)/length(pop)
+
+## which one is closer
+mean(sd_vector_n) - pop_sd
+mean(sd_vector_n_1) - pop_sd
+
+```
 
