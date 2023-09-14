@@ -15,3 +15,6 @@ Lab materials for SOC-GA 2332 Intro to Stats (Fall 2023, NYU Sociology)
 
 ### Problem Set 1 (Due 9/29/2023)
 + Please knit `ps1_problems.Rmd` in the `ps1` folder to convert the problem set to either a PDF or html file. Please submit a PDF file if you can, and only submit a html file if PDF is not possible. Please pay attention to the instructions of the assignment.
+
+### Lab 2 Visualization and Sampling Simulation (9/15/2023)
++ Lab 2 covers basic visualizations in R using the standard package `ggplot2`. We will use the package to simulate the sampling process and visualize some properties for the sampling distribution. A guidance to assignment 1 will be included.
