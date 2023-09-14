@@ -18,3 +18,4 @@ Lab materials for SOC-GA 2332 Intro to Stats (Fall 2023, NYU Sociology)
 
 ### Lab 2 Visualization and Sampling Simulation (9/15/2023)
 + Lab 2 covers basic visualizations in R using the standard package `ggplot2`. We will use the package to simulate the sampling process and visualize some properties for the sampling distribution. A guidance to assignment 1 will be included.
++ Preview lab notes: [Lab 2](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab2/lab2.html)
