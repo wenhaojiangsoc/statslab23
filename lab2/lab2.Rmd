@@ -41,6 +41,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Load package to environment
 library(tidyverse)
+library(ggplot2)
 library(gridExtra)
 library(kableExtra)
 
@@ -376,7 +377,7 @@ gapminder %>%
   theme_bw() +
   scale_color_grey() +
   scale_x_continuous(breaks = unique(gapminder$year)) +
-  theme(axis.text.x = element_text(size = 8, angle = 40, vjust = 0.6))
+  theme(axis.text.x = element_text(size = 8, angle = 90, vjust = 0.6))
 ```
 
 ### 11. Save plots in R
@@ -413,11 +414,15 @@ ggsave("graph/gdp_bric_2.png", height = 4, width = 6, units = c("in"), dpi = 160
 
 ### Part 1 Exercise
 
-1. In the `gapminder` data, which are the top 5 countries in Europe in terms of their GDP per Capital in 2002? Use `dyplr` functions to create a table for your result.
+1. In the `gapminder` data, which are the top 5 countries in Europe in terms of their GDP per Capita in 2002? Use `dplyr` functions to create a table for your result.
 
 ```{r part1-q1}
 
 # Your code here
+gapminder %>%
+  filter(continent == "Europe" & year == 2002) %>%
+  arrange(desc(gdpPercap)) %>%
+  head(n=5) ## or slice(1:5)
 
 ```
 
@@ -426,6 +431,11 @@ ggsave("graph/gdp_bric_2.png", height = 4, width = 6, units = c("in"), dpi = 160
 ```{r part1-q2}
 
 # Your code here
+gapminder %>%
+  filter(continent %in% c("europe","africa") & year == 2002) %>%
+  summarise(mean = mean(lifeExp),
+            median = median(lifeExp),
+            sd = sd(lifeExp))
 
 ```
 
@@ -494,6 +504,9 @@ set.seed(11011)
 # then covert the vector to a data frame
 pop_binom <- rbinom(n = 100000, size = 1, p = 0.5)
 
+## normal distribution
+rnorm(n = 10000, mean = 0, sd = 1)
+
 # plot the population
 pop_binom %>%
   # Convert vector to a tibble dataframe
@@ -529,7 +542,7 @@ pop_binom %>%
 ```{r LLN, message=F, warning=F}
 
 # First create four df of random samples
-set.seed(11011)
+set.seed(2023)
 
 sample10 <- pop_binom %>% 
   # Sample from pop
@@ -601,12 +614,20 @@ As sample size gets larger, the *sampling distribution of the sample mean* will 
   + When we need to complete the same operation many times, we can use a `for`-loop. In R, you can do this using a the `for`-loop syntax. 
 
 ```
-for(i in 1:n){
+for (i in 1:n){
 
   code expression of the iterative operation 
 
 }
 ```
+
+```{r}
+for (i in 1:100){
+  ## draw sample
+  
+}
+```
+
   + The `i` in the loop is an number for indexing. Whether you use `i` or `j` or other names doesn't matter. The `1:n` indicate the number of iterations you need for the loop (You don't always start from `1`, it depends on your specific problem). Together, `for(i in 1:n){...}` means "for `i` that ranges from 1 to n, do the operation that is specified in the `{}`."  
   
   + For example, we can use a `for`-loop to repeatedly sample from the population and save the mean of each sample in a vector. Let's try getting 100 samples with each sample n = 50.  
@@ -614,11 +635,11 @@ for(i in 1:n){
 ```{r for-loop, warning = F}
 # We create a "container" object to save the result
 # It can be a vector, a matrix, a list, etc. as long as it fits your purpose
-mean_container <- rep(NA, 100)
+mean_container <- rep(NA, 10000)
 
 # For-loop
 set.seed(10010)
-for (i in 1:100){
+for (i in 1:10000){
   # Inside the for-loop, you first randomly sample 50 rows from the pop
   sample <- sample(pop_binom, size = 50, replace = FALSE)
   # Calculat the mean and save it as the i-th number in the vector
@@ -644,9 +665,9 @@ mean_container %>%
   as_tibble() %>%
   ggplot(aes(value)) +
   geom_histogram(binwidth = 0.01, fill = "grey", color = "black") +
-  geom_vline(aes(xintercept = sd_neg), color = "red") +
-  geom_vline(aes(xintercept = mean), color = "red", linetype = "dashed") +
-  geom_vline(aes(xintercept = sd_pos), color = "red") +
+  geom_vline(aes(xintercept = sd_neg), color = "red", linetype = "dashed") +
+  geom_vline(aes(xintercept = mean), color = "red", linetype = "solid") +
+  geom_vline(aes(xintercept = sd_pos), color = "red", linetype = "dashed") +
   scale_x_continuous(limits=c(0, 1)) +
   labs(title = "Sampling Distribution of the Sample Mean (100 iterations of sample n = 50)",
        subtitle = "Mean marked by the dashed line, 1 standard deviation around the mean marked by solid lines")
