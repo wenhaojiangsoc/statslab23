@@ -22,6 +22,6 @@ Lab materials for SOC-GA 2332 Intro to Stats (Fall 2023, NYU Sociology)
 + **Solutions to the in-class exercise is uploaded to the Lab 2 folder.** You can also check the file [here](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab2/solution.html).
 
 ### Lab 3 Hypothesis Testing, Two Sample Means, and Overleaf (9/22/2023)
-+ Lab 3 covers the R implementation of hypothesis testing and the comparison of two sample means. An introduction to Overleaf will also be covered.
++ Lab 3 covers the R implementation of hypothesis testing, the comparison of two sample means, and an introduction to Overleaf.
 + Preview lab notes: [Lab 3](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab3/lab3.html)
 + An Overleaf template for your final project and for your future use as a baseline can be found [here](https://www.overleaf.com/8539929553qtggbbwwpbvq). **Please do not edit it**; instead, select it and copy it to **your own archive** for your future use.
