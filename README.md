@@ -1,5 +1,5 @@
 # Introduction to Statistics, Graduate Level
-Lab materials for SOC-GA 2332 Intro to Stats (Fall 2023, NYU Sociology) \\
+Lab materials for SOC-GA 2332 Intro to Stats (Fall 2023, NYU Sociology) \
 Office Hours: Tuesday 11-12:20PM [here if meet on Zoom](https://nyu.zoom.us/my/wenhaojiang).
  
 
