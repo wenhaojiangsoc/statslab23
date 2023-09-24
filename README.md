@@ -27,3 +27,11 @@ Office Hours: Tuesday 11-12:20PM [here if meet on Zoom](https://nyu.zoom.us/my/w
 + Lab 3 covers the R implementation of hypothesis testing, the comparison of two sample means, and an introduction to Overleaf.
 + Preview lab notes: [Lab 3](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab3/lab3.html)
 + An Overleaf template for your final project and for your future use as a baseline can be found [here](https://www.overleaf.com/8539929553qtggbbwwpbvq). **Please do not edit it**; instead, select it and copy it to **your own archive** for your future use.
+
+### Lab 4 Bivariate OLS Regression, Download Data from IPUMS (9/29/2023)
++ Lab 4 covers the R implementation of basic bivariate OLS regression and an introduction to IPUMS and data extraction.
++ Preview lab notes: [Lab 3](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab4/lab4.html)
++ When you fail to knit your Rmarkdown file because of the kableExtra package, please run the following codes in your RStudio **Console**:
+    + install.packages("devtools")
+    + devtools::install_github("kupietz/kableExtra")
+Then knit the file again.
