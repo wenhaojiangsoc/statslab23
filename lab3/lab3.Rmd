@@ -68,11 +68,11 @@ weight_df <- read.csv("data/weight.csv")
 ### Part 1 Exercise
 
 1. Write down the formula you use to calculate the following sample statistics (assume your sample size $= n$): 
-  + Sample mean: $\bar y =$
-  + Sample variance: $s^2 =$
-  + Sample standard deviation: $s =$
-  + Standard error of sample mean: $se =$
-  + 95% confidence interval of the population mean: 
+  + Sample mean: $\bar y = \frac{ \sum_{i=1}^{n} y_{i} }{ n }$
+  + Sample variance: $s^2 = \frac{ \sum_{i=1}^{n} (y_{i} - \bar{y})^2 }{ n-1 }$
+  + Sample standard deviation: $s = \sqrt{ \frac{ \sum_{i=1}^{n} (y_{i} - \bar{y})^2 }{ n-1 } }$
+  + Standard error of sample mean: $se = \frac{s}{\sqrt{n}}$
+  + 95% confidence interval of the population mean: $[\bar{y} - 1.96 \times se, \bar{y} + 1.96 \times se]$
 
 2. You have collected a sample of 25 on BMI (Body Mass Index). The sample mean is 23 and sample variance is 4. 
   + What is the point estimate of the population mean?
@@ -238,7 +238,6 @@ two_tail_t
 
 # ---- One sample one-tail t-test ---- 
 t.test(weight_df$change, mu = 0, alternative = "greater", conf.level = 0.95)
-
 ```
 
 ---
@@ -302,7 +301,8 @@ weight_c <- weight_df %>% filter(therapy == "c")
 t.test(
   x = weight_f$change,          # mean value vector from the first sample
   y = weight_c$change,          # mean value vector from the second sample
-  mu = 0,                       # mean difference given by your null hypothesis
+  mu = 0,   
+  # mean difference given by your null hypothesis
   alternative = "two.sided"     # direction of alternative hypothesis
 )
 ```
