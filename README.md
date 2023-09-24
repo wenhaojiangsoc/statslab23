@@ -30,8 +30,8 @@ Office Hours: Tuesday 11-12:20PM [here if meet on Zoom](https://nyu.zoom.us/my/w
 
 ### Lab 4 Bivariate OLS Regression, Download Data from IPUMS (9/29/2023)
 + Lab 4 covers the R implementation of basic bivariate OLS regression and an introduction to IPUMS and data extraction.
-+ Preview lab notes: [Lab 3](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab4/lab4.html)
-+ When you fail to knit your Rmarkdown file because of the kableExtra package, please run the following codes in your RStudio **Console**:
-    + install.packages("devtools")
-    + devtools::install_github("kupietz/kableExtra")
++ Preview lab notes: [Lab 4](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab4/lab4.html)
++ When you fail to knit your Rmarkdown file because of the `kableExtra` package, please run the following codes in your RStudio **Console**:
+    + `install.packages("devtools")`
+    + `devtools::install_github("kupietz/kableExtra")`
 Then knit the file again.
