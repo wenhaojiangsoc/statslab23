@@ -97,7 +97,7 @@ include_graphics("simulation_demo2.png")
 
 # Part 4: The Replication Project 
 
-Download the article for the replication project: Hadas Mandel and Moshe Semyonov. 2016. "Going back in time? Gender differences in trends and sources of the racial pay gap, 1970 to 2010." American Sociological Review 81(5): 1039-1068. Make sure to also download and save the Online Appendix (you will find it on the ASR website).  
+Download the article for the replication project: Hadas Mandel and Moshe Semyonov (2016). "Going back in time? Gender differences in trends and sources of the racial pay gap, 1970 to 2010." American Sociological Review 81(5): 1039-1068. Make sure to also download and save the Online Appendix (you will find it on the ASR website).  
 
 Read through the article and determine which variables you will need to replicate the project. Go to the IPUMS webpage and submit a screenshot of the page where you can see the samples and variables that you have selected (you can obtain this from your "Data Cart").
 
