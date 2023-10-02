@@ -35,3 +35,7 @@ Office Hours: Tuesday 11-12:20PM [here if meet on Zoom](https://nyu.zoom.us/my/w
     + `install.packages("devtools")`
     + `devtools::install_github("kupietz/kableExtra")` \
 Then knit the file again.
+
+### Problem Set 2 (Due 10/23/2023)
++ Please knit `ps2_problems.Rmd` in the `ps2` folder to convert the problem set to either a PDF or html file.
++ Please feel free to raise questions in lab or in my office hours.
