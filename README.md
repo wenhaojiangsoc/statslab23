@@ -39,3 +39,7 @@ Then knit the file again.
 ### Problem Set 2 (Due 10/23/2023)
 + Please knit `ps2_problems.Rmd` in the `ps2` folder to convert the problem set to either a PDF or html file.
 + Please feel free to raise questions in lab or in my office hours.
+
+### Lab 5 Simulation of OLS Regression with Interaction Terms (10/06/2023)
++ Lab 5 covers simulations of OLS regression, with one and multiple predictors, using R. We will also cover interaction terms and how to interpret them. 
++ Preview lab notes: [Lab 5](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab5/lab5.html)
