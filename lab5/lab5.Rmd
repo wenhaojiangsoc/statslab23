@@ -180,14 +180,15 @@ A nice feature of `stargazer` is that it allows you to customize what statistics
 ```{r stargazer2}
 
 # Omit some statistics
-stargazer(m_simu, type="text", omit.stat=c("ser", "f"))
+stargazer(m_simu, m_simu, type="latex", omit.stat=c("ser", "f"),
+          dep.var.labels = "Earning",
+          covariate.labels = c("Education","Constant"))
 
 ```
 
 Take a look at p.22 [on stargazer's documentation](https://cran.r-project.org/web/packages/stargazer/stargazer.pdf). You will find all statistics abbreviations you can use for omission.
 
 You can also change the dependent variable label, independent variable labels, column labels, etc. Try Google them when you want to customize.
-
 
 ---
 
@@ -202,10 +203,34 @@ You can also change the dependent variable label, independent variable labels, c
   (d) $se_{\beta_1}$
   (e) Construct the 95% confidence interval for $\beta_1$ (You can use the $\beta_1$ value reported in your OLS modeling result)
 
+```{r part1-exercise-Q2}
+## TSS
+TSS <- sum((earn2 - mean(earn2))^2)
+
+## SSE
+SSE <- sum((earn2 - m_simu_exercise$fitted.values)^2)
+
+## R^2
+(TSS-SSE)/TSS
+
+## pho^2
+(cor(earn2,edu2))^2
+
+## SE of beta1
+MSE <- SSE/(length(edu2)-2)
+se <- sqrt(
+  MSE/sum((edu2 - mean(edu2))^2)
+)
+
+## 95% CI
+upper <- summary(m_simu_exercise)$coefficients[2,1] + 1.96*se
+lower <- summary(m_simu_exercise)$coefficients[2,1] - 1.96*se
+```
+
 - The **sum of square error (SSE)** for Y is the sum of square errors for the fitted OLS model: 
   $$SSE = \sum\epsilon^2 = \sum(y - \hat{y})^2$$
 
-- The **total sum of sqaures (TSS)** for Y is the sum of square errors for the baseline OLS model (the "null model") that predict the value of Y without any X (the mean of Y, $\bar{Y}$, is used in the null model): 
+- The **total sum of squares (TSS)** for Y is the sum of square errors for the baseline OLS model (the "null model") that predict the value of Y without any X (the mean of Y, $\bar{Y}$, is used in the null model): 
   $$TSS = \sum(y - \bar{y})^2$$  
 - **R-squared** (coefficient of determination) is the proportional reduction in squared error when fitted with the OLS model in comparison with the null model: 
   $$R^2 = \frac{TSS - SSE}{TSS}$$ 
@@ -219,7 +244,29 @@ You can also change the dependent variable label, independent variable labels, c
 ```{r part1-exercise} 
 
 # Your code here
+set.seed(1234)
 
+# Simulate IV (edu level)
+edu2 <- rpois(300, lambda = 6) #rpois: Random Poisson Distribution with parameter lamda 
+# Simulate DV 
+earn2 <- 10 + 6*edu2 + rnorm(300, 0, 50) # add a random error using rnorm() 
+
+# Combine dataframe
+df_exercise <- data.frame(x_edu = edu2, y_earn = earn2)
+
+# Fit model
+m_simu_exercise <- lm(y_earn ~ x_edu, data = df_exercise)
+summary(m_simu_exercise)
+
+# Scatterplot
+df_exercise %>%
+  ggplot(aes(x = x_edu, y = y_earn)) +
+  geom_point(shape = 1, alpha = 0.7) +
+  geom_smooth(method = "lm") +
+  labs(title = "Relationship Between Years of Education and Income Rank",
+       subtitle = "(using simulated data)",
+       x = "Years of Edu",
+       y = "Income Rank")
 ```
 
 ---
@@ -267,6 +314,10 @@ Once we have simulated the sample data, we can see how different model setup per
 
 First, let us estimate a multiple regression without interaction, and see how the OLS line fit in relation to the data. We also want to check how the model residuals behave in relation to fitted y. 
 
+$$
+Y = \underbrace{10 + 3 \cdot \bar{inc}}_{Intercept} + 5 \cdot edu +  \epsilon
+$$
+
 ```{r part2-multi-regression}
 # Model without interaction
 mod1 = lm(y ~ edu + inc, data = df)
@@ -305,7 +356,7 @@ Now we add the interaction term `edu*inc` into the model. We can plot the relati
 ```{r part2-multi-regression2}
 
 # Taking into account of the interaction:
-mod2 = lm(y ~ edu + inc + edu*inc, data = df)
+mod2 = lm(y ~ edu + inc + edu:inc, data = df)
 summary(mod2)
 
 
@@ -393,8 +444,36 @@ df %>%
 + In Model 5, Holding other variables constant, what will be the predicted difference in estimated mean earnings for a white man and a black women?
 
 ```{r p2}
-
 # Your code here
+earnings <- read.csv("data/lab5_earnings.csv")
+
+## recode
+earnings[earnings$age == 9999, "age"] <- NA
+earnings <- earnings %>% 
+  mutate(age = 
+           case_when(age == 9999 ~ NA,
+                     .default = age))
+
+## create dummies for female
+earnings <-
+  earnings %>%
+  mutate(female =
+           case_when(sex == "female" ~ 1,
+                     .default = 0))
+
+## create dummies for black
+earnings <-
+  earnings %>%
+  mutate(black = case_when(race == "black" ~ 1,
+                           .default = 0),
+         other = case_when(race == "other" ~ 1,
+                           .default = 0))
+
+## fit model 5
+lm5 <- lm(earn ~ age + edu + female + black + other + edu*female,
+   data = earnings)
+
+summary(lm5)
 
 ```
 
