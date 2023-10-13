@@ -43,3 +43,7 @@ Then knit the file again.
 ### Lab 5 Simulation of OLS Regression with Interaction Terms (10/06/2023)
 + Lab 5 covers simulations of OLS regression, with one and multiple predictors, using R. We will also cover interaction terms and how to interpret them. 
 + Preview lab notes: [Lab 5](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab5/lab5.html)
+
+### Lab 6 OLS Anatomy, Confounding, Interactions with Dummies (10/13/2023)
++ Lab 6 covers the exogeneity assumption in OLS, its relation with confounding, and interactions with dummy variables.
++ Preview lab notes: [Lab 6](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab6/lab6.html)
