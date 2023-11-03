@@ -44,11 +44,11 @@ h3 { font-size: 20px; }
 
 * Assignment 2: Feedback sent out.
 
-* Assignment 3: Released today. Due date extended to Nov. 24
+* Assignment 3: Will be released tomorrow. Due date extended to Nov. 24 (11:59pm)
 
 |  Assignment  |      Release Date     |  Due Date  |
 |--------------|-----------------------|------------|
-|      3       |         Nov. 3        |   Nov. 24  |
+|      3       |         Nov. 4        |   Nov. 24  |
 |      4       |         Nov. 24       |   Dec. 16  |
 
 
@@ -60,7 +60,7 @@ h3 { font-size: 20px; }
 | ~~Cleaning the data~~                 | Oct. 21th to Oct. 25nd   |
 | ~~Replicating Table A1a, Table A1b, and Figure 1 and put in LaTeX~~ | Oct. 28th to Oct. 31th  |
 | **Replicating the regression results (Table A2a, Table A2b) and put in LaTeX** | Nov. 1st to Nov. 8th |
-| Write the 2-page project report + Wiggle room for formatting and debugging, etc. | Nov. 8th to **Nov. 13th (5pm) (extended)** | 
+| Write the 2-page project report + Wiggle room for formatting and debugging, etc. | Nov. 8th to **Nov. 13th (11:59pm) (extended)** | 
   
 ---
 
