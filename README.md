@@ -47,3 +47,11 @@ Then knit the file again.
 ### Lab 6 OLS Anatomy, Confounding, Interactions with Dummies (10/13/2023)
 + Lab 6 covers the exogeneity assumption in OLS, its relation with confounding, and interactions with dummy variables.
 + Preview lab notes: [Lab 6](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab6/lab6.html)
+
+### Lab 7 Types of Multivariate Relationships, Hetero/Homoskedasticity, F-test for Nested Models (10/20/2023)
++ Lab 7 covers the four types of multivariate relationships, the violation of homoskedasticity, robust standard error, F-test for nested models, and standardizing regression coefficients
++ Preview lab notes: [Lab 7](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab7/lab7.html)
+
+### Lab 8 Replication Project, Causal Inference Framework, and Logistic Regressions (11/03/2023)
++ Lab 8 covers tips of the replication project, the causal inference framework, and the R implementation of logistic regressions.
++ Preview lab notes: [Lab 8](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab8/lab8.html)
