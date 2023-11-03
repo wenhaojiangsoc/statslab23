@@ -1,0 +1,491 @@
+---
+title: "SOC-GA 2332 Intro to Stats Lab 8"
+author: "Wenhao Jiang"
+date: "11/03/2023"
+output:
+  html_document:
+    df_print: paged
+    theme: paper
+    highlight: textmate
+    number_sections: false
+---
+
+<style type="text/css">
+
+body{ 
+
+    font-size: 16px;
+    line-height: 1.7em;
+    <!-- text-align: justify; -->
+
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 16px;
+    border: solid 1px;
+    color: #008080
+}
+
+h1 { font-size: 32px; }
+
+h2 { font-size: 24px; }
+
+h3 { font-size: 20px; }
+
+</style>
+
+<br>
+
+---
+
+## Logistics
+
+* Assignment 2: Feedback sent out.
+
+* Assignment 3: Released today. Due date extended to Nov. 24
+
+|  Assignment  |      Release Date     |  Due Date  |
+|--------------|-----------------------|------------|
+|      3       |         Nov. 3        |   Nov. 24  |
+|      4       |         Nov. 24       |   Dec. 16  |
+
+
+* Replication Project Part 1 reminder: 
+
+|         Task                       |  Timeline          |
+|------------------------------------|--------------------|
+| ~~Obtaining the raw data from IPUMS~~  | By Oct. 18th       |
+| ~~Cleaning the data~~                 | Oct. 21th to Oct. 25nd   |
+| ~~Replicating Table A1a, Table A1b, and Figure 1 and put in LaTeX~~ | Oct. 28th to Oct. 31th  |
+| **Replicating the regression results (Table A2a, Table A2b) and put in LaTeX** | Nov. 1st to Nov. 8th |
+| Write the 2-page project report + Wiggle room for formatting and debugging, etc. | Nov. 8th to **Nov. 13th (5pm) (extended)** | 
+  
+---
+
+## Part 1: Replication Project Tips
+
+### 1.1 Samples
+
+* For the 1970 sample, use the 1% state sample
+* For the 1990 sample, use the 1% metro sample 
+  + The reason is that it is the only 1970 sample that provides non-missing `METRO` information
+* For the 2010 sample, use the single-year ACS sample, not 3- or 5-year pooled sample
+* Some of you have encountered memory issues.
+  + A. Try restarting your PC. This will release some used memories.
+  + B. Try restricting the sample first before doing any operations. Specifically, you should drop Rs who are younger than 25 and older than 59 (confirm if this is the case in the paper); keep only non-Hispanic White and Black Rs; Rs who are in the workforce (variable `LABFORCE`) and have valid occupation (variable `OCC1990`); and who are economically active (`INCWAGE>0`; pp.1046)
+* If you read pp.1046 carefully, you will notice that Rs with the top and bottom earning percentile are excluded
+  + You can create percentiles using `quantile(ma$WEEKEARN, seq(0.01,1,0.01))`, suppose your dataframe is `ma`, and the weekly earning variable is `WEEKEARN`
+* You should also drop Rs who have missing values for any of the used variables
+  + You may consider using the function `complete.cases()` to enable this feature. [Reference](https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame)
+
+### 1.2 Variables
+
+* Use `BPL` rather than `NATIVITY`
+ + The latter has no valid values for most samples
+* Use `HISPAN` to exclude Hispanic Whites and Hispanic Blacks
+* Use `CLASSWKR` to determine whether R is in a public sector or not
+  + You should look at CLASSWKRD, which gives detailed classification of `CLASSWKR`
+* Use CPI99 to adjust inflation for `INCWAGE`
+* The main dependent variable is the logged form of **weekly earnings**
+  + You will need `WKSWORK1` and `WKSWORK2` to measure the number of weeks worked last year. `WKSWORK1` always gives the best continuous estimate, but when `WKSWORK1` is not available, you should turn to `WKSWORK2`
+  + `WKSWORK2` is coded in intervals. For example, `WKSWORK2` = 1 means R worked for 1-13 weeks. Use the middle number as a proxy, that is, 7 weeks.
+* Recoding weekly working hours has a similar process. You will need `UHRSWORK` and `HRSWORK2` to construct the measure.   `UHRSWORK` always gives the best continuous estimate, but when `UHRSWORK` is not available, you should turn to `HRSWORK2` using the middle number as a proxy for the interval estimate. 
+* To estimate potential years of experience, the formula is given by `LMEXP = AGE - EDUYEAR - 6`
+  + `EDUYEAR` needs to be estimated
+  + Codes for this process are available in the `code` folder
+  
+### 1.3 Duncan's Dissimilarity Index
+
+* In Table A1a and A1b, you will notice that there is a dissimilarity index. This is a very commonly used measure of occupational segregation. 
+  + Check [Martin-Caughey (2022)](https://doi.org/10.1177/00031224211042053) on within-occupation variation and gender segregation using job titles and verbatim texts in GSS that describe jobs
+  + The standard Duncan's Dissimilarity/Segregation Index is given by:
+
+$$D = \frac{1}{2} \sum_{i=1}^{n} \left| \frac{a_i}{A} - \frac{b_i}{B} \right|$$
+
+where $a_i$ and $b_i$ is the number of White and Black workers in occupation group $i$. $A$ and $B$ represents the total number of White and Black workers. 
+* Instead of using hundreds of `OCC1990` categories, you will use 2-digit aggregated categories of `OCC1990`
+  + Codes are available on Brightspace
+  + Use the `merge()` function
+  
+### 1.4 General Instructions
+
+* It is totally okay if you cannot get exactly the same numbers! I also couldn't.
+* But they should be close enough. If they deviate a lot, you need to explain your speculations why the numbers differ this much.
+* The total number of observation $N$ may give you some hints (e.g., you did not restrict your sample as much as the original paper).
+* I am able to set up personal meetings next week after Wednesday in most time; I won't be able to meet in our regular OH, but send me emails to set up a time/ask me questions any time.
+
+
+## Part 2: Causality: The Potential Outcome Framework
+
+### 2.1 The Fundamental Problem of Causal Inference
+
+* The modern way of thinking about causality is to think about outcomes in a counterfactual approach
+* For example, the effect of a policy treatment on an outcome $Y$, is to think about the difference between $Y_{i}^{t}$, i.e., the potential outcome of individual $i$ receiving the treatment, and $Y_{i}^{c}$, i.e., the potential outcome of **the same individual**, if not receiving the treatment. Either one of the two terms is never observed.
+  + Notation-wise, $Y^{c}$ and $Y^{t}$ are both **potential outcomes** (i.e., Rubin's approach)
+  + ATE is defined as $ATE = \mathbb{E}[Y_{i}^{t}] - \mathbb{E}[Y_{i}^{c}] = \mathbb{E}[Y_{i}^{t}-Y_{i}^{c}]$
+  + We can only observe $\mathbb{E}[Y_{i}^{t} | D_i = 1]$ and $\mathbb{E}[Y_{i}^{c} | D_i = 0]$
+
+<br/><br/>
+
+### 2.2 Naive Estimation of the Average Treatment Effect
+
+* At the population level, the **average treatment effect (ATE)** is defined as:
+
+$$ATE = \mathbb{E}[\Delta] = \mathbb{E}[Y^t - Y^c] = \mathbb{E}[Y^t] - \mathbb{E}[Y^c]$$
+* Since we do not observe the population level $Y^T$ or $Y^C$, the naive approach to estimate the population level ATE uses the following equation:
+
+$$\hat{\mathbb{E}}[\Delta]_\text{NAIVE} = \mathbb{E}[Y^t|D = 1] - \mathbb{E}[Y^c|D = 0]$$
+  
+* which calculates the difference in the expected value of $Y$ in the observed treated group ($\mathbb{E}[Y^t|D = 1]$) and the expected value of $Y$ in the observed control group ($\mathbb{E}[Y^c|D = 0]$).  
+  
+* This will hold **if assignment to treatment is purely random**.  
+  
+<br/><br/>
+
+### 2.3 Selection Bias
+  
+* However, if there are selection bias that lead to certain kinds of unit to go into the treatment or control group, the naive estimator will be biased.  
+  
+* This is due to the fact that this additional factor is related to both assignment to treatment and the potential outcome.  
+
+* As covered in the lecture, we can decompose the naive estimator to:
+
+$$
+\begin{aligned}
+\hat{\mathbb{E}}[\Delta]_\text{NAIVE} &= \mathbb{E}[Y^t|D = 1] - \mathbb{E}[Y^c|D = 0] \\ 
+&= \underbrace{\mathbb{E}[Y^t|D=1] - \mathbb{E}[Y^c|D=1]}_{\text{ATT}} + \underbrace{\mathbb{E}[Y^c|D=1] - \mathbb{E}[Y^c|D=0]}_{\text{selection bias}}
+\end{aligned}
+$$
+
+where $\mathbb{E}[Y^t|D=1] - \mathbb{E}[Y^c|D=1]$ is the **treatment effect on the treated** and $\mathbb{E}[Y^c|D=1] - \mathbb{E}[Y^c|D=0]$ is the **selection bias**. You can think of it as the baseline difference of $Y$ if both the treatment and the control group are not treated.
+
+* For example, if family income both affects the likelihood of a child going to college and potential future income, will using the naive estimation of ATE estimating the income returns to college education **overestimate** or **underestimate** the true causal college effect?
+
+* There is also a definition of the **treatment effect on the control** (ATC), which can be expressed as $\mathbb{E}[Y^t|D=0] - \mathbb{E}[Y^c|D=0]$. This means: The difference in the expected $Y$ between (i) if people in the current control group ($D = 0$) get treated ($\mathbb{E}[Y^t|D=0]$), which is the counterfactual, and (ii) if people in the current control group ($D = 0$) did not get treated ($\mathbb{E}[Y^c|D=0]$), which is observed.
+
+* In old-school regression adjustments (i.e., including controls), the assumption is that $\underbrace{\mathbb{E}[Y^c|D=1, X] - \mathbb{E}[Y^c|D=0,X]}_{\text{selection bias}} = 0$
+  + This is a strong assumption, i.e., strong ignorability assumption
+  + Failure to satisfy the assumption will lead to omitted variable bias, or selection bias, or the violation of zero-conditional mean assumption
+
+---
+
+### Part 2 Exercise 1
+Assuming you know both potential outcomes $Y^t$ and $Y^c$ on the same individual, as well as their realized outcomes. Answering the following questions:
+
+<p align="center">
+![](graph/potential_outcome.png){width=70%}
+</p> 
+
+1. Calculate ATE:
+
+2. Calculate ATT: 
+
+3. Calculate ATC:
+
+4. Naive estimate of the ATE:
+
+5. Discuss: What causes the naive ATE to deviate from the true ATE in this example? 
+
+## Part 3: Discrete Dependent Variable
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      cache = FALSE,
+                      fig.align = "center",
+                      fig.width = 4.5,
+                      fig.height = 4,
+                      letina = TRUE)
+
+library(pacman)
+p_load(tidyverse, kableExtra, gridExtra)
+```
+
+### 3.1 Binary Response
+
+* At this moment, we focus on the case when the dependent variable is a binary response (0 and 1). For example, we may be interested in whether one voted for Trump in the 2016 General Election (`trump == 1` if Yes) 
+* As in regular OLS, we may also be interested in the association between income, gender, education, and party identification on whether R voted for Trump.  
+
+```{r load data, warning=FALSE, message=FALSE}
+
+## load data
+load("data/dat.RData")
+
+## check data
+head(dat) %>% kbl("html") %>% kable_classic_2(full_width = F)
+
+## party identification (taking the value from 0 to 6 with Strong Democrat = 0)
+```
+
+### 3.2 Bernoulli Distribution
+
+* When the outcome is binary, $Y_i \in \{0,1\}$, it is common to assume that it follows a [Bernoulli distribution](https://en.wikipedia.org/wiki/Bernoulli_distribution). A Bernoulli distribution has one parameter, which we might call $\pi$, that represents the probability of a "success." It is the convention to let $Y_i = 1$ be a success and $Y_i = 0$ be a fail; so, $\pi_i = \Pr[Y_i = 1]$.  
+
+* An example of the Bernoulli distribution is the toss of a biased coin. We can plot the expected probability of whether we get a "tail" or "head" given how the coin is biased.  
+
+<p align="center">
+![](graph/bernoulli.png){width=50%}
+</p> 
+
+* To model binary outcomes, we are assuming the observed outcome follows a Bernoulli distribution for each unit of observation $i$ with a parameter $\pi$ that can be predicted with a set of predictors, $\mathbf X_i$.
+
+### 3.3 The Linear Probability Model (LPM)
+
+* Suppose that we have a binary outcome $Y_i \in \{0,1\}$, where we think that the success probability depends on a set of predictors $\mathbf{X}_i = \{X_{i1}, X_{i2}, ..., X_{i3}\}$. We might write this as $\pi_i = \Pr[Y_i = 1 | \mathbf{X}_i] = \pi(\mathbf{X}_i)$, where the subscript $i$ shows that the success probability will vary across units in our sample, and where we have emphasized that $\pi(\cdot)$ is a function of a set of predictors.  
+
+* In the LPM, we assume that $\pi(\mathbf{X}_i)$ is a **linear** function of the predictors. That is,
+
+$$ \pi(\mathbf X_i) = \mathbb{E}[Y_i | \mathbf X_i] = \beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik},\qquad i= 1,2,...,n.$$
+
+* Notice that the equation looks *exactly* the same as the linear regression model we have considered in the previous labs. The only difference is that the outcome is a binary variable.
+
+* Linear Probability Model can be estimated using the same method as we estimate a regular linear model. In `R`, simply use `lm()`. In our case, we model the outcome variable `trump` using all the predictors in the dataframe.
+
+```{r LPM, warning=FALSE, message=FALSE}
+
+## fit LPM
+lpm = lm(trump ~ pid + log_inc + female + college, data = dat)
+
+## print summary
+summary(lpm)
+
+```
+  
+  
+* The interpretation of the coefficients of LPM is straightforward: Holding other variables constant, one unit increase in $X_k$ will increase/decrease the probability of $Y = 1$ by $\beta_k$. 
+
+* We can plot the LPM's predicted probability of voting for Trump by Party ID. 
+
+```{r plot LPM, warning=FALSE, message=FALSE}
+
+# create new dataset for predictions
+pred_dat = data.frame(
+  pid = 0:6,  # pid values to get predictions for
+  log_inc = median(dat$log_inc, # fix inc at median 
+                   na.rm = T), 
+  female = 0, # fix gender at male
+  college = 0 # fix education at less than BA
+)
+
+# create a new df of predict probability of voting for Trump
+yhat = cbind(pid = 0:6,
+             predict(lpm, newdata = pred_dat, type = "response",
+                     interval = "confidence")) %>%
+  as_tibble()
+
+# plot predicted probabilities (save plot in object lpm_plot)
+lpm_plot = yhat %>% 
+  ggplot(aes(x = pid, y = fit)) +
+  geom_line(col = "black") + 
+  geom_ribbon(aes(ymin = lwr, ymax = upr),
+              fill = "grey", alpha = .5, col = NA) +
+  scale_y_continuous(
+    name = "Predicted Probability\n",
+    breaks = seq(0, 1, .25)) +
+  scale_x_continuous(
+    name = "\nParty Identification",
+    breaks = seq(0, 6, 1)) + 
+  geom_hline(yintercept = c(0, 1),linetype = 2) +
+  geom_vline(xintercept = seq(0, 6, 1), linetype = 3, col = "grey") +
+  theme_classic() +
+  ggtitle("Probability of Voting for Trump by Party ID",
+          subtitle = "Results from Linear Probability Model")
+
+# print the plot
+print(lpm_plot)
+```
+
+* There are three things to notice:
+
+  + As the name of the model suggests, the predicted probability of voting for Trump is increasing *linearly* with our predictor.  
+
+  + We see that the confidence interval at `pid = 0` (i.e., "Strong Democrats") and both the confidence interval and our fitted value at `pid = 6` (i.e., "Strong Republican") take on *impossible values*. There cannot be something like a probability that is smaller than zero or larger than 1.
+
+  + The error distribution will not be homoskedastic
+
+* The above issues (especially the second one) motivate a **logistic regression model** (or a **Generalized Linear Model (GLM)**) in which the predicted probabilities are guaranteed to lie between zero and one, and we allow semi-*non-linear* relations between our predictors and the outcome.
+
+<br>
+
+## Part 4: Logistic Regressions
+
+### 4.1 Motivations and Basics
+
+* To bound the predicted probability within 0 and 1, we turn to the Sigmoid Function
+* $f(x) = \frac{1}{1+e^{-x}}$
+
+```{r sigmoid,message=FALSE, fig.height=2.5, fig.width=4, fig.align="center", echo=FALSE, warning=FALSE}
+data <-
+  data.frame(
+  x = seq(-10,10,0.05)
+)
+data$y <- (1)/(1+exp(-data$x))
+data %>%
+  ggplot(aes(x=x,y=y)) +
+  geom_line(color="darkred") +
+  theme_bw() +
+  xlab("x") +
+  ylab("f(x)") +
+  ggtitle("Sigmoid Function") +
+  theme(plot.title = element_text(size=10,hjust=0.5),
+              axis.text.x=element_text(size=6),
+              axis.text.y=element_text(size=6))
+```
+
+* The Sigmoid Function has two desired properties
+  + 1. $f(x)$ is bounded within 0 and 1
+  + 2. $x$ has no limit
+* The Sigmoid Function is therefore a good candidate to model the **probabilities** of some categorical dependent variable (e.g., voted for Trump $\pi_i = \pi(\mathbf{X}_i)$), given some observed characteristics $\mathbf{X}_i$
+* We specify the predicted conditional probability $\pi_i = \frac{1}{1+e^{-(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})}}$ 
+* With some algebra
+* $1-\pi_i = 1-\frac{1}{1+e^{-(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})}} = \frac{e^{-(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})}}{1+e^{-(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})}}$
+* $\frac{\pi_i}{1-\pi_i} = \frac{1}{e^{-(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})}}$
+* $\text{logit}(\pi_i) = \log(\frac{\pi_i}{1-\pi_i}) = \log \left(\frac{1}{e^{-(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})}} \right) = \beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik}$ 
+* This is the logit transformation!
+
+### 4.2 Properties of Sigmoid and Logit
+
+* Sigmoid function and logit function are inverse functions for each other
+* Sigmoid function: $y = \frac{1}{1+e^{-x}}$
+* Inverse of Sigmoid function: $x = \frac{1}{1+e^{-y}} \rightarrow y = \log(\frac{x}{1-x})$
+* $\frac{1}{1+e^{-x}}$ is bounded within 0 and 1. Inversely, the $x$ in $\log(\frac{x}{1-x})$ is bounded within 0 and 1
+
+```{r logit,message=FALSE, fig.height=2.5, fig.width=4, fig.align="center", echo=FALSE, warning=FALSE}
+data <-
+  data.frame(
+  x = seq(0.0001,0.9999,0.0001)
+)
+data$y <- log(data$x/(1-data$x))
+data %>%
+  ggplot(aes(x=x,y=y)) +
+  geom_line(color="darkred") +
+  theme_bw() +
+  xlab("x") +
+  ylab("logit(x)") +
+  ggtitle("Logit Function") +
+  theme(plot.title = element_text(size=10,hjust=0.5),
+              axis.text.x=element_text(size=6),
+              axis.text.y=element_text(size=6))
+```
+
+### 4.3 Odds and Odds Ratios
+
+* We call the term $\frac{\pi_i}{1-\pi_i}$ in the $\log()$ function “odds” (probability of "event" divided by probability of no "event")
+* Odds $Odds = \frac{\pi_i}{1-\pi_i} = \exp(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})$
+* We introduce the notion of odds ratio to interpret $\beta_k$
+* Odds ratio = $\frac{Odds_{X_{i1}+1}}{Odds_{X_{i1}}} = \frac{\exp(\beta_0 + \beta_1 (X_{i1} + 1) + \cdots +\beta_k X_{ik})}{\exp(\beta_0 + \beta_1 X_{i1} + \cdots +\beta_k X_{ik})} = \exp(\beta_1)$
+  + You may find it analogous to OLS, where $\hat{\beta_1}$ describes the (additive) change of the dependent variable
+  when the independent variable change by 1 unit
+  
+  
+### 4.4 Estimate Logistic Regression in R
+
+* Fitting a logistic regression in R is fairly easy (recall that this is estimated via the logic of the maximum likelihood estimation). If we use the same predictors as those of the LPM discussed above, the code to fit the logistic regression is.
+
+```{r logistic, warning=FALSE, message=FALSE}
+## fit logistic regression model (glm)
+l_reg = glm(
+    trump ~ pid + log_inc + female + college, # formula of regression
+    family = binomial(link = "logit"),        # specifying the dist. of outcome
+    data = dat                                # data
+)
+
+## check the class of the object
+class(l_reg)
+
+## summarize results
+summary(l_reg)
+```
+
+#### Model Interpretation
+
+* In the `summary` for logistic regression models:
+
+  + 1. The coefficients in the `Estimate` column show the estimated regression coefficients, i.e., the $\hat\beta_k$'s.
+  For example, the coefficient of the `pid` variable suggests that a unit increase in `pid` is associated with a `1.206`
+  increase in the *logit* (the *log odds*) of the probability of voting for Trump. 
+
+  + 2. We might also interpret the coefficients in terms of *odds* by exponentiating them. Hence, the odds of the
+  outcome are predicted to increase **by a factor of** $e^{\hat\beta_1}$ for each unit increase in `pid`. For example, a
+  unit increase in `pid` is associated with an increase of the odds of voting for Trump by a factor of $e^{1.206} = 3.340$.  
+
+  + 3. You can calculating the exponentiated regression coefficients of a logistic regression model by using the `coef`
+  function to extract the estimated coefficients from the model and, then, use the `exp()` function:
+  
+```{r exp, warning=FALSE, message=FALSE}
+# extract coefficients
+l_coef = coef(l_reg)
+  
+# print coefficients and their exponentiated form
+rbind(coef = l_coef, exp_coef = exp(l_coef))
+```
+
+#### Predicted Probabilities
+
+* It is always a good idea to plot the predicted probabilities (both for yourself and for your readers). In other words, we want to plot how the probability of the outcome changes when we vary a focal variable while fixing the remain variables at certain values. 
+
+* In R, doing this is quite straightforward. We have already created a new dataset for which we want the predictions above (when plotting the predicted probabilities using the LPM). Let us use the exact same dataset again. 
+```{r predicted logistic, warning=FALSE, message=FALSE}
+## predict probability of voting for Trump (using logit model)
+yhat_logit = cbind(pid = 0:6,
+                   predict(l_reg,  # model object is different!
+                           newdata = pred_dat, # data for prediction is the same!
+                           type = "response")) %>%
+  as.data.frame()
+```
+
+* By using the `type = "response"` option, we will obtain the predicted probabilities. However, the SE of the predicted probabilities is not available.
+* SE is available, however, when we predict the *logit* by setting `se.fit = TRUE`. We specify the option `type = "link"` in the `predict` function. It can be shown that the sampling distribution of the predicted logits follow a Normal distribution in large samples
+  + As the predicted logits are Normally distributed in large samples, we can use thee estimated standard errors to calculate the 95% confidence intervals of the predicted logits. These intervals will have the form $\text{CI} = \text{logit}(\hat\pi_i) \pm 1.96 \times  \widehat{\text{S.E.}}(\text{logit}(\hat\pi_i))$.
+  + This will give us the confidence interval for the predicted logits. But we want the 95% CIs for the predicted probabilities. Here we use the fact that the inverse-logit function is a strictly increasing function and just apply the function to both end-points of the confidence interval. This will give us the confidence interval for the predicted probabilities. That is, if the 95% CI for the predicted logits has the form $(a, b)$, then interval $(\text{logit}^{-1}(a), \text{logit}^{-1}(b))$ will be the 95% confidence interval for the predicted probabilities.
+
+* In R, we can do this as follows:
+```{r prediction, warning=FALSE, message=FALSE}
+# predict the logit and standard errors
+pred_logit = predict(l_reg, 
+                     newdata = pred_dat,
+                     response = "link",
+                     se.fit = TRUE) %>%
+    as.data.frame() %>%
+    select(fit, se.fit)
+
+# calculate 95% CI for logits 
+pred_logit = pred_logit %>%
+  mutate(lwr = fit - 1.96 * se.fit, 
+         upr = fit + 1.96 * se.fit)
+
+# apply inverse-logit function to get pred. probs and CI
+pred_p = pred_logit %>%
+  mutate_at(1:4, function(a){1 / (1 + exp(-a))}) %>%
+  mutate(pid = pred_dat$pid)
+
+# plot predicted probabilities (save plot in object l_plot)
+l_plot = pred_p %>% 
+  ggplot(aes(x = pid, y = fit)) +
+  geom_line(col = "black") + 
+  geom_ribbon(aes(ymin = lwr, ymax = upr),
+              fill = "grey", alpha = .5, col = NA) +    
+  scale_y_continuous(name = "Predicted Probability\n",
+                     breaks = seq(0, 1, .25)) +
+  scale_x_continuous(name = "\nParty Identification",
+                     breaks = seq(0, 6, 1)) + 
+  geom_hline(yintercept = c(0, 1), linetype = 2) +
+  geom_vline(xintercept = seq(0, 6, 1), linetype = 3, col = "grey") +
+  theme_classic() +
+  ggtitle("Probability of Voting for Trump by Party ID",
+          subtitle = "Results from Logistic Regression Model")
+
+# print plot
+print(l_plot)
+```
+
+* Notice that all the predictions and the corresponding confidence intervals lie between zero and one, as desired. Furthermore, we see that our model predicts that the probability voting for Trump is almost zero for Strong Democrats (`pid = 0~1`) and almost one for Strong Republicans (`pid = 5~6`). 
+
+* This is a much more intuitive presentation of your results (or the meaning of the estimated regression coefficients) than an exponentiated coefficient of 3.341. So, whenever you run these models you should try to plot the predicted probabilities.
+
+Lastly, we can use the `gridExtra::grid.arrange` function to compare the LPM and the logistic regression model:
+
+```{r plot, fig.width = 8.5}
+gridExtra::grid.arrange(lpm_plot, l_plot, nrow = 1)
+```
