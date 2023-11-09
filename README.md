@@ -55,3 +55,7 @@ Then knit the file again.
 ### Lab 8 Replication Project, Causal Inference Framework, and Logistic Regressions (11/03/2023)
 + Lab 8 covers tips of the replication project, the causal inference framework, and the R implementation of logistic regressions.
 + Preview lab notes: [Lab 8](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab8/lab8.html)
+
+### Lab 9 Kitagawa-Oaxaca-Blinder Decomposition, Ordered Logit Model, Multinomial Logit Model, Conditional Logit Model (11/10/2023)
++ Lab 9 covers the Kitagawa-Oaxaca-Blinder Decomposition that is used in Mandel and Semyonov (2016), and Ordered, Multinomial, and Conditional Logit Models
++ Preview lab notes: [Lab 8](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab9/lab9.html)
