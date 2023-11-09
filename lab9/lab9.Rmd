@@ -39,7 +39,16 @@ h3 { font-size: 20px; }
 
 ## Logistics   
 * Exam 4
-* Replication project Part 1: Due Mon. 11/13 at 11:59pm. Please submit to Wenhao.
+
+* Replication project Part 1: Due Mon. 11/13 at 11:59pm. Please submit to Wenhao
+
+* Please understand every step of the codes you currently have
+  + For example, `pivot_wider()` function is from lab 1 codes, which I explained in lab 2 or 3.
+  + You should also be familiar with the combined use of `group_by() %>% summarize()`, which is very common in data analysis.
+
+* Why there are `NA` values in dissimilarity index?
+
+* How to format the dissimilarity index into a LaTeX table?
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
