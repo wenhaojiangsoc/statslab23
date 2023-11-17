@@ -59,3 +59,7 @@ Then knit the file again.
 ### Lab 9 Kitagawa-Oaxaca-Blinder Decomposition, Ordered Logit Model, Multinomial Logit Model, Conditional Logit Model (11/10/2023)
 + Lab 9 covers the Kitagawa-Oaxaca-Blinder Decomposition that is used in Mandel and Semyonov (2016), and Ordered, Multinomial, and Conditional Logit Models
 + Preview lab notes: [Lab 9](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab9/lab9.html)
+
+### Lab 10 Panel Data, Fixed Effects, and Random Effects Models (11/17/2023)
++ Lab 10 covers panel data structure, fixed-effects, and random-effects models
++ Preview lab notes: [Lab 10](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab10/lab10.html)
