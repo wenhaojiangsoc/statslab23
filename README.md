@@ -63,3 +63,7 @@ Then knit the file again.
 ### Lab 10 Panel Data, Fixed Effects, and Random Effects Models (11/17/2023)
 + Lab 10 covers panel data structure, fixed-effects, and random-effects models
 + Preview lab notes: [Lab 10](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab10/lab10.html)
+
+### Lab 11 Weighted Mean and Regression, Multiple Imputation (12/01/2023)
++ Lab 11 covers the basics of weights in sample mean and regression, and multiple imputation
++ Preview lab notes: [Lab 11](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab11/lab11.html)
