@@ -1,0 +1,302 @@
+---
+title: "SOC-GA 2332 Intro to Stats Lab 12"
+date: "12/1/2023"
+output:
+  html_document:
+    df_print: paged
+    theme: paper
+    highlight: textmate
+    toc: true
+  pdf_document: 
+    toc: true
+---
+
+
+<style type="text/css">
+
+body{ 
+
+    font-size: 16px;
+    line-height: 1.7em;
+    <!-- text-align: justify; -->
+
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 16px;
+    border: solid 1px;
+}
+
+h1 { font-size: 32px; }
+
+h2 { font-size: 24px; }
+
+h3 { font-size: 20px; }
+
+</style>
+
+<br>
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F, message = F)
+
+library(pacman)
+p_load(tidyverse, data.table, stargazer, kableExtra, 
+       gridExtra, MatchIt, PSweight, AER, haven,
+       ggthemes, srvyr,mice)
+```
+
+## Part 0: Logistics
+
+* Feedback to replication project part 1 released
+* You have two options for part 2 (due Dec. 15)
+  + A replication of the original KOB decomposition, with Table 1, 2, and Figure 2 (see instructions)
+  + You can either manually code your KOB decomposition function, or use `R` packages, such as `oaxaca`. You should consider using the `twofold` rather than `threefold` option. 
+
+* Three-fold decomposition:
+
+$$
+\begin{aligned}
+\Delta \bar{Y} &= \bar{\boldsymbol{X}}_A'\hat{\beta}_A - \bar{\boldsymbol{X}}_B\hat{\beta}_B \\
+\Delta \bar{Y} &= \underbrace{(\bar{\boldsymbol{X}}_A - \bar{\boldsymbol{X}}_B)'\hat{\beta}_B}_{\text{endowments}} +  \underbrace{\bar{\boldsymbol{X}}_B'(\hat{\beta}_A - \hat{\beta}_B)}_{\text{coefficients}} + \underbrace{(\bar{\boldsymbol{X}}_A - \bar{\boldsymbol{X}}_B)'(\hat{\beta}_A - \hat{\beta}_B)}_{\text{interaction}}
+\end{aligned}
+$$  
+
+* Two-fold decomposition:
+
+$$
+\begin{aligned}
+\Delta \bar{Y} &= \bar{\boldsymbol{X}}_A'\hat{\beta}_A - \bar{\boldsymbol{X}}_B\hat{\beta}_B \\
+\Delta \bar{Y} &= \underbrace{(\bar{\boldsymbol{X}}_A - \bar{\boldsymbol{X}}_B)'\hat{\beta}_A}_{\text{explained}} +  \underbrace{\bar{\boldsymbol{X}}_B'(\hat{\beta}_A - \hat{\beta}_B)}_{\text{unexplained}}
+\end{aligned}
+$$ 
+
+* The second option is to extend the analysis in some meaningful way
+  + For example, you may ask whether the changing racial gap or gender gap is different for people in high-earning and low-earning occupations
+  + Or you may ask whether the observed pattern is true for the White-Hispanic racial gap etc.
+  + Please talk to me or Siwei on the ideas you have; we can assess its feasibility
+  
+* Assignment 4 will be released tomorrow. Due date will be Dec. 20 (11:59pm)
+
+## Part 1: Using Weights in Descriptive Statistics and Regression (for IPUMS data)
+
+* Weights are important in deriving an unbiased estimate for the population parameter, especially when the target parameter is heterogeneous across subgroups, and some subgroups are over- or under-sampled.
+
+* We will use the IPUMS PERWT (person weight) variable to demonstrate how to use weights for descriptive statistics and regression models. 
+
+* First, it is useful to review the PERWT variable description:  
+
+  + PERWT indicates how many persons in the U.S. population are represented by a given person in an IPUMS sample. It is generally a good idea to use PERWT when conducting a person-level analysis of any IPUMS sample. The use of PERWT is optional when analyzing one of the "flat" or unweighted IPUMS samples. Flat IPUMS samples include the 1% samples from 1850-1930, all samples from 1960, 1970, and 1980, the 1% unweighted samples from 1990 and 2000, the 10% 2010 sample, and any of the full count 100% census datasets. PERWT must be used to obtain nationally representative statistics for person-level analyses of any sample other than those. 
+  
+* In `R`, there are multiple packages that can be used to generate weighted descriptive statistics such as `TAM`, `stats`, `survey` and `srvyr`. Here we use `srvyr` because it works well with `tidyverse` commands. For regression models, you can directly input the weights in the `lm()` function. 
+
+```{r weights, warning=FALSE, message=FALSE}
+
+## load data
+wt_example <- read.csv("data/wt_example.csv")
+
+## specify the survey design
+wt_example <- wt_example %>%
+  as_survey_design(weight = PERWT)
+
+## summarization with and without weight
+wt_example %>% 
+  summarize(unweighted.mean = mean(INCWAGE),
+            unweighted.sd = sd(INCWAGE),
+            weighted.mean = survey_mean(INCWAGE),
+            weighted.sd = survey_sd(INCWAGE)) %>%
+    kbl("html") %>% 
+  kable_classic_2(full_width = F)
+```
+
+* How is weighted mean calculated?
+
+* The standard error of the weighted mean is actually a non-trivial issue
+  + Check out [this site](https://www.alexstephenson.me/post/2022-04-02-weighted-variance-in-r/) for some brilliant discussions
+  + People also use Taylor expansion to "linearize" the ratio form of the weighted mean and get standard error. Check out the section: Variance of the weighted mean in the [page](https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#cite_note-sarndal1992-3)
+
+```{r categorical weighted, warning=FALSE, message=FALSE}
+
+## unweighted frequency table
+wt_example %>%
+  group_by(SEX) %>%
+  summarize(freq = n()) %>%
+  mutate(prop = freq/sum(freq)) %>%
+    kbl("html") %>% 
+  kable_classic_2(full_width = F)
+
+## weighted frequency table
+wt_example %>%
+  group_by(SEX) %>%
+  summarize(prop = survey_prop(),
+            freq = survey_total()) %>%
+    kbl("html") %>% 
+  kable_classic_2(full_width = F)
+```
+
+```{r weighted regression}
+## unweigthed regression
+m1 <- lm(log(INCWAGE + 0.01) ~ SEX + EDUC + SEX*EDUC, data = wt_example)
+## Weigthed regression
+m2 <- lm(log(INCWAGE + 0.01) ~ SEX + EDUC + SEX*EDUC, data = wt_example, weights = PERWT)
+
+## compare results
+stargazer(m1, m2, 
+          type = "text", 
+          column.labels = c("Unweighted", "Weighted"), 
+          dep.var.labels = "Log Wage")
+```
+
+* How is the weighted coefficient calculated?
+
+## Part 2: Missing Data
+
+* There are many ways to deal with missing data. The "correct" strategy will depend on your data, your research question and your methods. 
+
+* But you should always be aware of the assumptions you make when inferring from a dataset with missing values
+
+### 2.1 Complete-case analysis 
+
+* The simplest way of dealing with missing data (and what most statistical software will do automatically) is to do **complete-case** analyses. In a complete-case analysis (listwise-deletion), you retain only those observations that are non-missing for all variables in your analysis. 
+  + For example, the linear regression model in `R`, by default, uses complete cases
+  + Pro: Simple, easy to execute 
+  + Con: You may lose a significant amount of data that contain important information
+  + It builds upon the very strong assumption of Missing Completely At Random (MCAR)
+
+### 2.2 Mean and Conditional Mean (Regression) Imputation 
+
+#### Mean Imputation 
+
+* Apply the mean value of each variable to all missing cases of that variable
+
+  + Mean imputation preserves the means of variables, but it assumes a more conservative distribution of the variables and tends to weaken relationships between variables
+  + Mean imputation generally yields biased regression coefficients and invalid inferences
+  + It ignores the possible relation between the missing variable and other variables in imputation
+  + There are no estimates of uncertainties about the imputation
+
+```{r impute mean, warning=FALSE}
+
+## create some synthetic data with missingness
+set.seed(87654)
+N <- 1000
+ 
+## some random variables
+x1 <- round(rnorm(N), 2)
+x2 <- round(x1 + rnorm(N, 10, 5))
+x3 <- round(runif(N, -100, 20))
+ 
+## manipulate missing values
+x1[rbinom(N, 1, 0.2) == 1] <- NA  ## 20% missingness
+x2[rbinom(N, 1, 0.05) == 1] <- NA ## 5% missingness
+x3[rbinom(N, 1, 0.7) == 1] <- NA  ## 70% missingness
+ 
+## indicator for missings (needed later)
+x1_miss_ind <- is.na(x1)
+x2_miss_ind <- is.na(x2)
+x3_miss_ind <- is.na(x3)
+ 
+## tore variables in a data frame
+df_mean <- tibble(x1, x2, x3, x1_miss_ind, x2_miss_ind, x3_miss_ind)
+
+## impute mean 
+df_mean <- df_mean %>% 
+  replace_na(list(x1 = mean(df_mean$x1, na.rm=T)))
+
+## density of x1 pre and post imputation
+ 
+### density of observed data
+plot(density(df_mean$x1[x1_miss_ind == FALSE]),
+     xlim = c(- 4, 4),
+     ylim = c(0, 0.9),
+     lwd = 2, 
+     main = "Density Pre and Post Mean Imputation",
+     xlab = "X1")
+ 
+### density of observed & imputed data
+points(density(df_mean$x1), 
+       lwd = 2, 
+       type = "l", 
+       col = "red")
+ 
+### legend
+legend("topleft",
+       c("Before Imputation", "After Imputation"),
+       lty = 1,
+       lwd = 2,
+       col = c("black", "red"))
+```
+
+#### Conditional mean (regression) imputation
+
+* Conditional-mean imputation replaces missing data with predicted values, obtained, for example, from a regression equation (regression imputation)
+  + It provides the basis for Multiple Imputation, and frequently appears in the ML literature due to its "prediction" feature
+  + In the simplest form, no uncertainties about imputation are introduced
+
+### 2.3 Multiple Imputation with `mice`
+
+```{r mice, warning=FALSE, message=FALSE}
+
+## load data into the environment
+data(wagepan, package = "wooldridge")
+
+## take one-year sample 
+dat <- wagepan %>%
+  filter(year == 1980)  %>%
+  select(c(agric, black, construc, ent, exper, fin, hisp, 
+           poorhlth, married, hours, lwage))
+
+## save the sample
+original <- dat
+
+## remove some values to create missingness
+set.seed(1234)
+dat[sample(1:nrow(dat), 20), "lwage"] <- NA
+
+## initialize code
+init <- mice(dat, maxit=0) 
+meth <- init$method ## imputation method
+predM <- init$predictorMatrix ## predictor matrix
+
+## replace all except the variables we want to impute with ""
+meth[!names(meth) == "lwage"] <- ""
+
+## set imputation method
+meth[c("lwage")] <- "norm"
+
+## multiple imputation
+set.seed(1234)
+imputed_mice <- mice(dat, method = meth, predictorMatrix = predM, 
+               m = 5, ## by default, m = 5
+               maxit = 5) ## by default, maxit = 5 
+
+## return the imputed data
+imputed <- complete(imputed_mice) ## by default, the first imputed data is returned
+imputed_complete <- complete(imputed_mice, "long") ## you can set `long` option to extract the complete m imputations
+
+## check for missings
+sum(is.na(imputed$lwage))
+
+## check the predictions
+actual <- original$lwage[is.na(dat$lwage)]
+predicted <- imputed$lwage[is.na(dat$lwage)]
+df <- tibble(actual, predicted)
+
+## mean value
+mean(actual)
+mean(predicted)
+
+## original and imputed
+df
+
+## regression analysis with pooled imputation
+fit <- with(data = imputed_mice, 
+            exp = lm(lwage ~ black + hisp + log(hours)))
+summary(pool(fit))
+
+## compare with the original regression
+summary(lm(lwage ~ black + hisp + log(hours), dat))
+```
