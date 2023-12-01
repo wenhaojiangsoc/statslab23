@@ -1,5 +1,5 @@
 ---
-title: "SOC-GA 2332 Intro to Stats Lab 12"
+title: "SOC-GA 2332 Intro to Stats Lab 11"
 date: "12/1/2023"
 output:
   html_document:
