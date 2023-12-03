@@ -1,7 +1,7 @@
 ---
 title: "Problem Set 4"
 author: "SOC-GA 2332 Intro to Stats (Fall 2023)"
-date: 'Due: Monday, Dec. 20th, 11:59 pm'
+date: 'Due: Wednesday, Dec. 20th, 11:59 pm'
 output:
   pdf_document: default
   html_document:
