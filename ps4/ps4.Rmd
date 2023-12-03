@@ -87,7 +87,7 @@ Variable Name|  Variable Detail
   *Hint: Hausman test evaluates whether the results (i.e. the estimated coefficients) from a fixed-effects and random-effects model are significantly different. You are encouraged to search online what the test is and how to decide which model is preferred.*
   
 
-# Part 3 Data Transformation
+# Part 2 Data Transformation
 
 [20pts] Import \texttt{parent\_inc.csv} to your R environment. The data frame looks like this: 
 
