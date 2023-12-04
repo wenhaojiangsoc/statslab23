@@ -67,3 +67,7 @@ Then knit the file again.
 ### Lab 11 Weighted Mean and Regression, Multiple Imputation (12/01/2023)
 + Lab 11 covers the basics of weights in sample mean and regression, and multiple imputation
 + Preview lab notes: [Lab 11](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab11/lab11.html)
+
+### Lab 12 Matching, Inverse Propensity Weighting, Instrumental Variable Estimation (12/08/2023)
++ Lab 12 covers the basics of matching algorithm, inverse propensity weighting, and instrumental variable estimation under the causal inference framework
++ Preview lab notes: [Lab 12](https://htmlpreview.github.io/?https://github.com/wenhaojiangsoc/statslab/blob/main/lab12/lab12.html)
