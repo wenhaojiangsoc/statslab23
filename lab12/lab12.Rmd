@@ -189,20 +189,20 @@ lapply(ecls_cov, function(v) {
 
 ```
 
-### Estimate Average Treatment Effects
+### Estimate Treatment Effects
 
-* Using matched dataset, we can now estimate ATE using two different methods. 
+* Using matched dataset, we can now estimate ATT using two different methods. 
   * We can either use the results of a two sample t-test and calculate the difference in means
   * or regress mean math score on school types
     * Note that since we are using the matched dataset, the distribution of the covariates are balanced in both the treatment and control group
-    * Therefore, whether control variables are included or not in the linear model would not affect the ATE estimate
+    * Therefore, whether control variables are included or not in the linear model would not affect the ATT estimate
 
 ```{r ATE estimate}
 ## 1. two sample t-test
 with(dta_m, t.test(c5r2mtsc_std ~ catholic))
 ## mean in group 0: 0.3673451 
 ## mean in group 1: 0.2096679 
-## ATE = 0.2096679 - 0.3673451 = -0.1576772
+## ATT = 0.2096679 - 0.3673451 = -0.1576772
 
 ## 2. OLS model
 ## no covariates
@@ -258,6 +258,10 @@ prs_df %>%
 ## Part 3: Inverse probability weighting
 
 * Use propensity scores to weight units based on their probabilities of being treated. 
+* There are several options that measure different quantities of interest
+  * `IPW` measures ATE. $weight(w_1,w_0) = (\frac{1}{e(x)},\frac{1}{1-e(x)})$
+  * `treated` measures ATT. $weight(w_1,w_0) = (1,\frac{e(x)}{1-e(x)})$
+  * `overlap` measures ATO. $weight(w_1,w_0) = (1 - e(x),e(x))$
 
 ```{r matching algorithm, warning=FALSE}
 
@@ -266,36 +270,32 @@ ps.formula <- catholic ~ race_white + p5hmage +
                   I(w3income / 10^3) + p5numpla + w3momed_hsb
 
 bal.ipw <- SumStat(ps.formula = ps.formula, zname ="catholic",
-weight = c("matching", "overlap", 'IPW'), data = ecls_nomiss)
-
-## check overlap 
-plot(bal.ipw, type = "density")
+weight = c("treated", "overlap", "IPW"), data = ecls_nomiss)
 
 # check balance by weight type 
-plot(bal.ipw, metric = "ASD")
-
+plot(bal.ipw)
 ```
 
-* Estimate ATE: 
+* Estimate ATT, ATO, and ATE: 
 
 ```{r estimate ATE by weighting, warning=FALSE}
 
-## average treatment effect among the matched population
-ate.match <- PSweight(ps.formula = ps.formula, yname = "c5r2mtsc_std", data = ecls_nomiss, family = "gaussian",
-weight = "matching")
+## average treatment effect among the treated population
+att <- PSweight(ps.formula = ps.formula, yname = "c5r2mtsc_std", data = ecls_nomiss, family = "gaussian",
+weight = "treated")
 
 ## average treatment effect among the overlap population
-ate.overlap <- PSweight(ps.formula = ps.formula, yname = "c5r2mtsc_std", data = ecls_nomiss, family = "gaussian",
+ato <- PSweight(ps.formula = ps.formula, yname = "c5r2mtsc_std", data = ecls_nomiss, family = "gaussian",
 weight = "overlap")
 
 ## average treatment effect using IPW
-ate.ipw <- PSweight(ps.formula = ps.formula, yname = "c5r2mtsc_std", data = ecls_nomiss, family = "gaussian",
+ate <- PSweight(ps.formula = ps.formula, yname = "c5r2mtsc_std", data = ecls_nomiss, family = "gaussian",
 weight = "IPW")
 
 ## check results
-summary(ate.match)
-summary(ate.overlap)
-summary(ate.ipw)
+summary(att)
+summary(ato)
+summary(ate)
 ```
 
 ## Part 4: Instrumental Variables 
